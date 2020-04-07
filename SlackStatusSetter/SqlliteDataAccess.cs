@@ -28,6 +28,13 @@ namespace SlackStatusSetter
                 cnn.Execute("insert into SlackStatus (status_text, status_emoji) values (@status_text, @status_emoji)", profile);
             }
         }
+        public static void DeleteStatus(SlackProfile profile)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                cnn.Execute("delete from SlackStatus where status_text = @status_text and status_emoji = @status_emoji", profile);
+            }
+        }
 
         private static string LoadConnectionString(string id = "Default")
         {

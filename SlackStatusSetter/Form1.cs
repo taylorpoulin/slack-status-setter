@@ -107,6 +107,22 @@ namespace SlackStatusSetter
             e.Value = ((SlackProfile)e.ListItem).status_emoji + "   " + ((SlackProfile)e.ListItem).status_text;
         }
 
+        private void btnDeleteStatus_Click(object sender, EventArgs e)
+        {
+            SlackProfile profile = new SlackProfile
+            {
+                status_text = txtStatus.Text.Trim(),
+                status_emoji = txtEmoji.Text.Trim(),
+                status_expiration = 0
+            };
+
+            SqliteDataAccess.DeleteStatus(profile);
+
+            LoadStatusList();
+
+            txtStatus.Text = "";
+            txtEmoji.Text = "";
+        }
     }
 
     internal class StatusModel
