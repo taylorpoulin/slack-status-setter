@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SlackStatusSetter
 {
@@ -33,7 +34,14 @@ namespace SlackStatusSetter
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                cnn.Execute("delete from SlackStatus where status_text = @status_text and status_emoji = @status_emoji", profile);
+                // Attempt to delete the status
+                int executeStatus = cnn.Execute("delete from SlackStatus where status_text = @status_text and status_emoji = @status_emoji", profile);
+
+                // Display an error if the deletion failed
+                if (executeStatus == 0)
+                {
+                    MessageBox.Show("Deletion Failed");
+                }
             }
         }
 
