@@ -30,6 +30,21 @@ namespace SlackStatusSetter
             statusList = SqliteDataAccess.LoadStatuses();
 
             WireUpStatusList();
+
+            deleteButtonHandler();
+        }
+
+        private void deleteButtonHandler()
+        {
+            // Every time we refresh the list, we want to disable the "Delete Status" button if there are no longer any items, and enable it if there are
+            if (lbStatus.SelectedIndex < 0)
+            {
+                btnDeleteStatus.Enabled = false;
+            }
+            else
+            {
+                btnDeleteStatus.Enabled = true;
+            }
         }
 
         private void WireUpStatusList()
@@ -104,9 +119,33 @@ namespace SlackStatusSetter
 
         private void lblStatus_Format(object sender, ListControlConvertEventArgs e)
         {
-            e.Value = ((SlackProfile)e.ListItem).status_emoji + "   " + ((SlackProfile)e.ListItem).status_text;
+            e.Value = ((SlackProfile)e.ListItem).status_text + "   " + ((SlackProfile)e.ListItem).status_emoji;
         }
 
+        private void btnDeleteStatus_Click(object sender, EventArgs e)
+        {
+            // If Selected Index is -1 or lower then you shouldn't be able to click this button, but somehow you did so throw an error message
+            if (lbStatus.SelectedIndex < 0)
+            {
+                MessageBox.Show("There are no items to delete");
+
+                return;
+            }
+
+            // Obtain the profile from the lbStatus box
+            SlackProfile profile = new SlackProfile
+            {
+                status_text = ((SlackProfile)(lbStatus.SelectedItem)).status_text,
+                status_emoji = ((SlackProfile)(lbStatus.SelectedItem)).status_emoji.Trim(),
+                status_expiration = 0
+            };
+
+            // Delete it
+            SqliteDataAccess.DeleteStatus(profile);
+
+            // Reload lbStatus box
+            LoadStatusList();
+        }
     }
 
     internal class StatusModel
